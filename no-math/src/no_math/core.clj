@@ -25,5 +25,6 @@
 
 (defn total-required-wrapping-paper [dims-list]
   (->> dims-list
-       (map #(required-wrapping-paper (str->dims %)))
+       (map str->dims)
+       (map required-wrapping-paper)
        (reduce +)))
