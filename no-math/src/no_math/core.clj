@@ -9,22 +9,21 @@
        (map read-string)
        (zipmap [:l :w :h])))
 
-(defn side-areas [{:keys [l w h]}]
+(defn areas [{:keys [l w h]}]
   (list (* l w) (* w h) (* h l)))
 
 (defn surface-area [dims]
-  (->> (side-areas dims)
+  (->> (areas dims)
        (map #(* 2 %))
        (reduce +)))
 
-(defn area-of-smallest-side [dims]
-  (apply min (side-areas dims)))
+(defn slack [dims]
+  (apply min (areas dims)))
 
 (defn required-wrapping-paper [dims]
-  (+ (surface-area dims) (area-of-smallest-side dims)))
+  (+ (surface-area dims) (slack dims)))
 
 (defn total-required-wrapping-paper [dims-list]
   (->> dims-list
-       (map str->dims)
-       (map required-wrapping-paper)
+       (map (comp required-wrapping-paper str->dims))
        (reduce +)))
