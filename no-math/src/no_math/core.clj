@@ -27,3 +27,21 @@
   (->> dims-list
        (map (comp required-wrapping-paper str->dims))
        (reduce +)))
+
+(defn smallest-perimeter [dims]
+  (->> (vals dims)
+       sort
+       (take 2)
+       (map #(+ % %))
+       (apply +)))
+
+(defn ribbon-for-bow [dims]
+  (reduce * (vals dims)))
+
+(defn required-ribbon [dims]
+  (+ (smallest-perimeter dims) (ribbon-for-bow dims)))
+
+(defn total-required-ribbon [dims-list]
+  (->> dims-list
+       (map (comp required-ribbon str->dims))
+       (reduce +)))
