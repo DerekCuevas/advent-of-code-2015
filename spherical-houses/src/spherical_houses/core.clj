@@ -14,9 +14,9 @@
   (reduce
    (fn [{:keys [visited previous]} dir]
      (let [next (move dir previous)]
-       {:visited (update visited next (fnil inc 0))
+       {:visited (conj visited next)
         :previous next}))
-   {:visited {[0 0] 1} :previous [0 0]}
+   {:visited #{[0 0]} :previous [0 0]}
    path))
 
 (defn visited [path]
