@@ -1,8 +1,6 @@
 (ns spherical-houses.core
   (:gen-class))
 
-(def input (slurp "resources/input.txt"))
-
 (defn- move [[x y] dir]
   (case dir
     \> [(inc x) y]
