@@ -29,4 +29,4 @@
 (defn visited-by-two-santas [path]
   (let [[santas-path robo-santas-path] (unravel path)]
     (count (into (:visited (travel robo-santas-path))
-		         (:visited (travel santas-path))))))
+                 (:visited (travel santas-path))))))
