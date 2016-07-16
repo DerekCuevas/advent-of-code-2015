@@ -24,5 +24,5 @@
 (defn visited-by-two-travelers [path]
   (->> (unravel path)
        (map travel)
-       (map into)
+       (apply into)
        count))
