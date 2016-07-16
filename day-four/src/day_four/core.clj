@@ -2,12 +2,15 @@
   (:require [digest :refer [md5]])
   (:gen-class))
 
-(defn- starts-with-at-least-five-zeros? [s]
-  (and (>= (count s) 5)
-       (= (subs s 0 5) "00000")))
+(defn- starts-with-at-least-n-zeros? [n s]
+  (and (>= (count s) n)
+       (= (subs s 0 n) (apply str (repeat n "0")))))
 
-(defn find-smallest [key]
+(defn- find-smallest-md5-with-n-zeros [n key]
   (loop [x 0]
-    (if (starts-with-at-least-five-zeros? (md5 (str key x)))
+    (if (starts-with-at-least-n-zeros? n (md5 (str key x)))
       x
       (recur (inc x)))))
+
+(def find-smallest-md5-with-five-zeros (partial find-smallest-md5-with-n-zeros 5))
+(def find-smallest-md5-with-six-zeros (partial find-smallest-md5-with-n-zeros 6))
