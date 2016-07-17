@@ -5,6 +5,6 @@
 
 (def input (split (slurp "resources/input.txt") #"\n"))
 
-(deftest nice-count-test
+(deftest nice-count-one-test
   (testing "returns number of nice strings in list"
-    (is (= (nice-count input) 238))))
+    (is (= (nice-count-one input) 238))))
