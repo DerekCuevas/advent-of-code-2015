@@ -2,8 +2,6 @@
   (:require [clojure.string :refer [includes?]])
   (:gen-class))
 
-(def ^:private not-empty? (comp not empty?))
-
 (defn- contains-at-least-three-vowels? [s]
   (>= (count (filter #{\a \e \i \o \u} s)) 3))
 
@@ -20,8 +18,7 @@
 
 (defn- one-letter-repeats-with-one-between? [s]
   (->> (partition 3 1 s)
-       (filter #(= (first %) (last %)))
-       not-empty?))
+       (some #(= (first %) (last %)))))
 
 (defn- nice? [rules s]
   (every? true? (rules s)))
