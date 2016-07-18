@@ -1,5 +1,4 @@
 (ns day-five.core
-  (:require [clojure.string :refer [includes?]])
   (:gen-class))
 
 (defn- contains-at-least-three-vowels? [s]
@@ -9,9 +8,9 @@
   (not= (count s) (count (dedupe s))))
 
 (defn- not-in-blacklist? [s]
-  (->> ["ab" "cd" "pq" "xy"]
-       (map (partial includes? s))
-       (not-any? true?)))
+  (->> (partition 2 1 s)
+	   (map (partial apply str))
+	   (not-any? #{"ab" "cd" "pq" "xy"})))
 
 (defn- pair-appears-twice? [s]
   (some? (re-find #"([a-z][a-z]).*\1" s)))
