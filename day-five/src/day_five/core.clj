@@ -9,8 +9,8 @@
 
 (defn- not-in-blacklist? [s]
   (->> (partition 2 1 s)
-	   (map (partial apply str))
-	   (not-any? #{"ab" "cd" "pq" "xy"})))
+       (map (partial apply str))
+       (not-any? #{"ab" "cd" "pq" "xy"})))
 
 (defn- pair-appears-twice? [s]
   (some? (re-find #"([a-z][a-z]).*\1" s)))
