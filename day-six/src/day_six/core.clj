@@ -3,33 +3,31 @@
   (:gen-class))
 
 (def ^:private grid-size 1000)
-(def ^:private input (string/split (slurp "resources/input.txt") #"\n"))
 
 (defn- parse-instruction [s]
   (let [format #"(turn off|turn on|toggle) (\d+),(\d+) through (\d+),(\d+)"
         [type & coords] (vec (rest (re-find format s)))
-        [fx fy tx ty] (mapv read-string coords)]
+        [sx sy ex ey] (mapv read-string coords)]
     {:type (keyword (string/replace type #" " "-"))
-     :from [fx fy]
-     :to [tx ty]}))
+     :start [sx sy]
+     :end [ex ey]}))
 
 (defn- init-grid [n init]
-  (vec (for [x (range n)]
-         (vec (repeat n init)))))
+  (vec (for [_ (range n)] (vec (repeat n init)))))
 
-(defn- coordinates [[fx fy] [tx ty]]
-  (for [i (range fx (inc tx))
-        j (range fy (inc ty))]
+(defn- coordinates [[sx sy] [ex ey]]
+  (for [i (range sx (inc ex))
+        j (range sy (inc ey))]
     [i j]))
 
-(defn- update-light [type prev]
+(defn- update-light [type state]
   (case type
     :turn-on true
     :turn-off false
-    :toggle (not prev)))
+    :toggle (not state)))
 
-(defn- update-grid [grid {:keys [type from to]}]
-  (->> (coordinates from to)
+(defn- update-grid [grid {:keys [type start end]}]
+  (->> (coordinates start end)
        (reduce #(update-in %1 %2 (partial update-light type)) grid)))
 
 (defn- configure-lights [coll]
