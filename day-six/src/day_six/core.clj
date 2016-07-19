@@ -12,8 +12,8 @@
      :start [sx sy]
      :end [ex ey]}))
 
-(defn- init-grid [n init]
-  (vec (for [_ (range n)] (vec (repeat n init)))))
+(defn- init-grid [size init]
+  (vec (repeat size (vec (repeat size init)))))
 
 (defn- coordinates [[sx sy] [ex ey]]
   (for [i (range sx (inc ex))
