@@ -3,12 +3,13 @@
   (:gen-class))
 
 (def ^:private grid-size 1000)
+(def ^:private grid-edge (dec grid-size))
 
 (defn- parse-instruction [s]
   (let [format #"(turn off|turn on|toggle) (\d+),(\d+) through (\d+),(\d+)"
-        [type & coords] (vec (rest (re-find format s)))
+        [op & coords] (vec (rest (re-find format s)))
         [sx sy ex ey] (mapv read-string coords)]
-    {:type (keyword (string/replace type #" " "-"))
+    {:op (keyword (string/replace op #" " "-"))
      :start [sx sy]
      :end [ex ey]}))
 
@@ -20,25 +21,36 @@
         j (range sy (inc ey))]
     [i j]))
 
-(defn- update-light [type state]
-  (case type
-    :turn-on true
-    :turn-off false
-    :toggle (not state)))
-
-(defn- update-grid [grid {:keys [type start end]}]
+(defn- update-grid [light-type grid {:keys [op start end]}]
   (->> (coordinates start end)
-       (reduce #(update-in %1 %2 (partial update-light type)) grid)))
+       (reduce #(update-in %1 %2 (partial light-type op)) grid)))
 
-(defn- configure-lights [coll]
+(defn- configure-lights [light-type coll]
   (->> (map parse-instruction coll)
-       (reduce update-grid (init-grid grid-size false))))
+       (reduce (partial update-grid light-type) (init-grid grid-size 0))))
 
-(defn- lights-on [lights]
-  (reduce
-   #(if (get-in lights %2) (inc %1) %1)
-   0
-   (coordinates [0 0] [(dec grid-size) (dec grid-size)])))
+(defn- sum-brightness [grid]
+  (->> (coordinates [0 0] [grid-edge grid-edge])
+       (reduce #(+ %1 (get-in grid %2)) 0)))
 
-(defn count-lights-on [coll]
-  (lights-on (configure-lights coll)))
+;; part one
+
+(defn- binary-light [op state]
+  (case op
+    :turn-on 1
+    :turn-off 0
+    :toggle (bit-flip state 0)))
+
+(defn total-lights-on [coll]
+  (sum-brightness (configure-lights binary-light coll)))
+
+;; part two
+
+(defn- multi-light [op state]
+  (case op
+    :turn-on (inc state)
+    :turn-off (if-not (neg? (dec state)) (dec state) 0)
+    :toggle (+ 2 state)))
+
+(defn total-brightness [coll]
+  (sum-brightness (configure-lights multi-light coll)))
