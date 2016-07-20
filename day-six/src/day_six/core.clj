@@ -47,7 +47,7 @@
 (defn- multi-light [op state]
   (case op
     :turn-on (inc state)
-    :turn-off (if-not (neg? (dec state)) (dec state) 0)
+    :turn-off (if (zero? state) 0 (dec state))
     :toggle (+ 2 state)))
 
 (defn total-brightness [coll]
