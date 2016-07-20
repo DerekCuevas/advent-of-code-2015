@@ -3,23 +3,22 @@
   (:gen-class))
 
 (def ^:private grid-size 1000)
-(def ^:private grid-edge (dec grid-size))
 
 (defn- parse-instruction [s]
   (let [format #"(turn off|turn on|toggle) (\d+),(\d+) through (\d+),(\d+)"
         [op & coords] (vec (rest (re-find format s)))
-        [sx sy ex ey] (mapv read-string coords)]
+        [x1 y1 x2 y2] (mapv read-string coords)]
     {:op (keyword (string/replace op #" " "-"))
-     :start [sx sy]
-     :end [ex ey]}))
+     :start [x1 y1]
+     :end [x2 y2]}))
 
 (defn- init-grid [size init]
   (vec (repeat size (vec (repeat size init)))))
 
-(defn- coordinates [[sx sy] [ex ey]]
-  (for [i (range sx (inc ex))
-        j (range sy (inc ey))]
-    [i j]))
+(defn- coordinates [[x1 y1] [x2 y2]]
+  (for [x (range x1 (inc x2))
+        y (range y1 (inc y2))]
+    [x y]))
 
 (defn- update-grid [light-type grid {:keys [op start end]}]
   (->> (coordinates start end)
@@ -30,8 +29,7 @@
        (reduce (partial update-grid light-type) (init-grid grid-size 0))))
 
 (defn- sum-brightness [grid]
-  (->> (coordinates [0 0] [grid-edge grid-edge])
-       (reduce #(+ %1 (get-in grid %2)) 0)))
+  (reduce + (flatten grid)))
 
 ;; part one
 
