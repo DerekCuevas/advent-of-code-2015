@@ -46,5 +46,5 @@
       (number? connection) connection
       (keyword? connection) (probe circuit connection)
       :else (apply (:gate connection)
-  			       (map (fn [input] (if (keyword? input) (probe circuit input) input))
-  				        (:input connection))))))
+                   (map (fn [input] (if (keyword? input) (probe circuit input) input))
+                        (:input connection))))))
