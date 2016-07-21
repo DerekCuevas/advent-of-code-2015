@@ -6,24 +6,25 @@
 
 ;; double check bit-not
 (def ^:private gate->fn
-  {"AND" bit-and
-   "OR" bit-or
-   "LSHIFT" bit-shift-left
-   "RSHIFT" bit-shift-right
-   "NOT" bit-not})
+  {:AND bit-and
+   :OR bit-or
+   :LSHIFT bit-shift-left
+   :RSHIFT bit-shift-right
+   :NOT bit-not})
 
 (defn- parse-input [s]
   (let [input (read-string s)]
     (if (number? input) input (keyword input))))
 
 (defn- parse-op
-  ([i]
-    {:input (parse-input i)})
-  ([gate i]
-    {:input [(parse-input i)] :gate (gate->fn gate)})
-  ([ia gate ib]
-    {:input [(parse-input ia) (parse-input ib)] :gate (gate->fn gate)}))
+  ([input]
+    {:input input})
+  ([gate input]
+    {:input [input] :gate (gate->fn gate)})
+  ([input-a gate input-b]
+    {:input [input-a input-b] :gate (gate->fn gate)}))
 
 (defn- parse-instruction [s]
-  (let [[lhs [rhs]] (map #(split % #" ") (split s #" -> "))]
-    (merge {:output (keyword rhs)} (apply parse-op lhs))))
+  (let [[lhs rhs] (split s #" -> ")]
+    (merge {:output (keyword rhs)}
+           (->> (split lhs #" ") (map parse-input) (apply parse-op)))))
