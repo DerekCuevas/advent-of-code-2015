@@ -4,7 +4,7 @@
 
 (def ^:private input (split (slurp "resources/input.txt") #"\n"))
 
-;; double check bit-not
+;; FIXME: double check bit-not !!!
 (def ^:private gate->fn
   {:AND bit-and
    :OR bit-or
@@ -32,10 +32,19 @@
                 (apply parse-op)))))
 
 (defn- add-connection [circuit {:keys [gate input output]}]
-  (if gate
-    (assoc circuit output {:gate gate :input input})
-    (assoc circuit output input)))
+  (->> (if gate {:gate gate :input input} input)
+       (assoc circuit output)))
 
 (defn- build-circuit [instructions]
   (->> (map parse-instruction instructions)
        (reduce add-connection {})))
+
+(defn- probe [circuit wire]
+  (let [value (get circuit wire)]
+    (cond
+      (number? wire) wire
+      (number? value) value
+      (keyword? value) (probe circuit value)
+      :else (apply (:gate value)
+                   (map (partial probe circuit)
+                        (:input value))))))
