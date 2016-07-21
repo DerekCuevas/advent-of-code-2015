@@ -32,19 +32,19 @@
                 (apply parse-op)))))
 
 (defn- add-connection [circuit {:keys [gate input output]}]
-  (->> (if gate {:gate gate :input input} input)
-       (assoc circuit output)))
+  (assoc circuit output (if gate {:gate gate :input input} input)))
 
 (defn- build-circuit [instructions]
   (->> (map parse-instruction instructions)
        (reduce add-connection {})))
 
+;; should memoize???
 (defn- probe [circuit wire]
-  (let [value (get circuit wire)]
+  (let [connection (get circuit wire)]
     (cond
-      (number? wire) wire
-      (number? value) value
-      (keyword? value) (probe circuit value)
-      :else (apply (:gate value)
-                   (map (partial probe circuit)
-                        (:input value))))))
+      (nil? connection) (throw (Exception. (str "No signal -> " wire)))
+      (number? connection) connection
+      (keyword? connection) (probe circuit connection)
+      :else (apply (:gate connection)
+  			       (map (fn [input] (if (keyword? input) (probe circuit input) input))
+  				        (:input connection))))))
