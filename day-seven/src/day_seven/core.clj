@@ -27,4 +27,15 @@
 (defn- parse-instruction [s]
   (let [[lhs rhs] (split s #" -> ")]
     (merge {:output (keyword rhs)}
-           (->> (split lhs #" ") (map parse-input) (apply parse-op)))))
+           (->> (split lhs #" ")
+                (map parse-input)
+                (apply parse-op)))))
+
+(defn- add-connection [circuit {:keys [gate input output]}]
+  (if gate
+    (assoc circuit output {:gate gate :input input})
+    (assoc circuit output input)))
+
+(defn- build-circuit [instructions]
+  (->> (map parse-instruction instructions)
+       (reduce add-connection {})))
