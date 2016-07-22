@@ -27,9 +27,7 @@
 (defn- parse-instruction [s]
   (let [[lhs rhs] (split s #" -> ")]
     (merge {:output (keyword rhs)}
-           (->> (split lhs #" ")
-                (map parse-input)
-                (apply parse-op)))))
+           (->> (split lhs #" ") (map parse-input) (apply parse-op)))))
 
 (defn- add-connection [circuit {:keys [gate input output]}]
   (assoc circuit output (if gate {:gate gate :input input} input)))
@@ -38,15 +36,13 @@
   (->> (map parse-instruction instructions)
        (reduce add-connection {})))
 
-;; TODO: clean up
 (def probe
   (memoize
    (fn [circuit wire]
      (let [connection (get circuit wire)]
        (cond
-         (nil? connection) (throw (Exception. (str "No signal -> " wire)))
          (number? connection) connection
          (keyword? connection) (probe circuit connection)
-         :else (apply (:gate connection)
-                      (map (fn [input] (if (keyword? input) (probe circuit input) input))
-                           (:input connection))))))))
+         :else (->> (:input connection)
+                    (map #(if (keyword? %) (probe circuit %) %))
+                    (apply (:gate connection))))))))
