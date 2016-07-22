@@ -9,11 +9,11 @@
    :RSHIFT bit-shift-right
    :NOT bit-not})
 
-(defn- parse-input [s]
-  (let [input (read-string s)]
-    (if (number? input) input (keyword input))))
+(defn- parse-token [s]
+  (let [token (read-string s)]
+    (if (number? token) token (keyword token))))
 
-(defn- parse-op
+(defn- parse-lhs
   ([input]
     {:input input})
   ([gate input]
@@ -25,8 +25,8 @@
   (let [[lhs rhs] (split s #" -> ")]
     (merge {:output (keyword rhs)}
            (->> (split lhs #" ")
-                (map parse-input)
-                (apply parse-op)))))
+                (map parse-token)
+                (apply parse-lhs)))))
 
 (defn- add-connection [circuit {:keys [gate input output]}]
   (->> (if gate {:gate gate :input input} input)
