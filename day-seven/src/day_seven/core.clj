@@ -38,13 +38,15 @@
   (->> (map parse-instruction instructions)
        (reduce add-connection {})))
 
-;; should memoize???
-(defn- probe [circuit wire]
-  (let [connection (get circuit wire)]
-    (cond
-      (nil? connection) (throw (Exception. (str "No signal -> " wire)))
-      (number? connection) connection
-      (keyword? connection) (probe circuit connection)
-      :else (apply (:gate connection)
-                   (map (fn [input] (if (keyword? input) (probe circuit input) input))
-                        (:input connection))))))
+;; TODO: clean up
+(def probe
+  (memoize
+   (fn [circuit wire]
+     (let [connection (get circuit wire)]
+       (cond
+         (nil? connection) (throw (Exception. (str "No signal -> " wire)))
+         (number? connection) connection
+         (keyword? connection) (probe circuit connection)
+         :else (apply (:gate connection)
+                      (map (fn [input] (if (keyword? input) (probe circuit input) input))
+                           (:input connection))))))))
