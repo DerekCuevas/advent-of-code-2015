@@ -11,11 +11,12 @@
 
 (defn- parse-token [s]
   (let [token (read-string s)]
-    (if (number? token) token (keyword token))))
+    (if (number? token)
+      token
+      (keyword token))))
 
 (defn- parse-lhs
-  ([input]
-    {:input input})
+  ([input] input)
   ([gate input]
     {:input [input] :gate (gate->fn gate)})
   ([input-a gate input-b]
@@ -23,18 +24,14 @@
 
 (defn- parse-instruction [s]
   (let [[lhs rhs] (split s #" -> ")]
-    (merge {:output (keyword rhs)}
-           (->> (split lhs #" ")
-                (map parse-token)
-                (apply parse-lhs)))))
-
-(defn- add-connection [circuit {:keys [gate input output]}]
-  (->> (if gate {:gate gate :input input} input)
-       (assoc circuit output)))
+    {(keyword rhs)
+     (->> (split lhs #" ")
+          (map parse-token)
+          (apply parse-lhs))}))
 
 (defn build-circuit [instructions]
   (->> (map parse-instruction instructions)
-       (reduce add-connection {})))
+       (reduce merge {})))
 
 (def probe
   (memoize
