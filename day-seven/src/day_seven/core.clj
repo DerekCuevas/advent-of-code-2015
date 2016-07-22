@@ -16,11 +16,12 @@
       (keyword token))))
 
 (defn- parse-lhs
-  ([input] input)
+  ([input]
+    input)
   ([gate input]
-    {:input [input] :gate (gate->fn gate)})
+    {:inputs [input] :gate (gate->fn gate)})
   ([input-a gate input-b]
-    {:input [input-a input-b] :gate (gate->fn gate)}))
+    {:inputs [input-a input-b] :gate (gate->fn gate)}))
 
 (defn- parse-instruction [s]
   (let [[lhs rhs] (split s #" -> ")]
@@ -36,10 +37,10 @@
 (def probe
   (memoize
    (fn [circuit wire]
-     (let [connection (get circuit wire)]
+     (let [input (get circuit wire)]
        (cond
-         (number? connection) connection
-         (keyword? connection) (probe circuit connection)
-         :else (->> (:input connection)
+         (number? input) input
+         (keyword? input) (probe circuit input)
+         :else (->> (:inputs input)
                     (map #(if (keyword? %) (probe circuit %) %))
-                    (apply (:gate connection))))))))
+                    (apply (:gate input))))))))
