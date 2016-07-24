@@ -23,7 +23,7 @@
 
 (defn- path-length [graph path]
   (->> (partition 2 1 path)
-   	   (map #(apply distance graph %))
+       (map #(apply distance graph %))
        (reduce +)))
 
 (defn shortest-route [graph]
