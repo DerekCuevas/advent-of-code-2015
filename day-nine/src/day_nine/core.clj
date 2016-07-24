@@ -3,35 +3,34 @@
             [clojure.math.combinatorics :as combo])
   (:gen-class))
 
-(defn- parse-connection [s]
+(defn- parse-edge [s]
   (let [[lhs rhs] (split s #" = ")]
     {:pair (mapv keyword (split lhs #" to "))
      :distance (read-string rhs)}))
 
-(defn- add-connection [graph {distance :distance [to from] :pair}]
+(defn- add-edge [graph {distance :distance [to from] :pair}]
   (-> graph
       (update from #(conj % {to distance}))
       (update to #(conj % {from distance}))))
 
-(defn build-graph [connections]
-  (->> (map parse-connection connections)
-       (reduce add-connection {})))
+(defn build-graph [edges]
+  (->> (map parse-edge edges)
+       (reduce add-edge {})))
 
 (defn- distance [graph to from]
-  (->> (get graph to)
-       (some from)))
+  (some from (get graph to)))
 
 (defn- path-length [graph path]
   (->> (partition 2 1 path)
        (map #(apply distance graph %))
        (reduce +)))
 
-(defn- compute-distances [graph]
+(defn- possible-path-lengths [graph]
   (->> (combo/permutations (keys graph))
        (map (partial path-length graph))))
 
 (defn shortest-route [graph]
-  (apply min (compute-distances graph)))
+  (apply min (possible-path-lengths graph)))
 
 (defn longest-route [graph]
-  (apply max (compute-distances graph)))
+  (apply max (possible-path-lengths graph)))
