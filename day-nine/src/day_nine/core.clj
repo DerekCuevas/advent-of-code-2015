@@ -1,6 +1,6 @@
 (ns day-nine.core
   (:require [clojure.string :refer [split]]
-            [clojure.math.combinatorics :as combo])
+            [clojure.math.combinatorics :refer [permutations]])
   (:gen-class))
 
 (defn- parse-edge [s]
@@ -26,7 +26,7 @@
        (reduce +)))
 
 (defn- possible-path-lengths [graph]
-  (->> (combo/permutations (keys graph))
+  (->> (permutations (keys graph))
        (map (partial path-length graph))))
 
 (defn shortest-route [graph]
