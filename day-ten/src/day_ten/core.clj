@@ -9,5 +9,5 @@
 
 (defn repeatedly-look-and-say [n s]
   (->> (range n)
-       (reduce (fn [mutated _] (look-and-say mutated)) s)
+       (reduce (fn [previous _] (look-and-say previous)) s)
        count))
