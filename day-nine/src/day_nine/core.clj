@@ -26,7 +26,12 @@
        (map #(apply distance graph %))
        (reduce +)))
 
-(defn shortest-route [graph]
+(defn- compute-distances [graph]
   (->> (combo/permutations (keys graph))
-       (map (partial path-length graph))
-       (apply min)))
+       (map (partial path-length graph))))
+
+(defn shortest-route [graph]
+  (apply min (compute-distances graph)))
+
+(defn longest-route [graph]
+  (apply max (compute-distances graph)))

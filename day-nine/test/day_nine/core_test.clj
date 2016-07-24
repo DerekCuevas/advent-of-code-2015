@@ -6,6 +6,10 @@
 (def input (split (slurp "resources/input.txt") #"\n"))
 (def graph (build-graph input))
 
-(deftest a-test
+(deftest shortest-route-test
   (testing "returns distance of the shortest route"
     (is (= (shortest-route graph) 207))))
+
+(deftest longest-route-test
+  (testing "returns distance of the longest route"
+    (is (= (longest-route graph) 804))))
