@@ -1,4 +1,4 @@
-(ns not-quite-lisp.core
+(ns day-one.core
   (:gen-class))
 
 (defn travel [directions]

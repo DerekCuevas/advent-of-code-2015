@@ -1,4 +1,4 @@
-# not-quite-lisp
+# day-one
 
 FIXME: description
 
@@ -10,7 +10,7 @@ Download from http://example.com/FIXME.
 
 FIXME: explanation
 
-    $ java -jar not-quite-lisp-0.1.0-standalone.jar [args]
+    $ java -jar day-one-0.1.0-standalone.jar [args]
 
 ## Options
 
