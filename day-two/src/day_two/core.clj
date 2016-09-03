@@ -1,11 +1,9 @@
-(ns no-math.core
-  (:require [clojure.string :as str])
+(ns day-two.core
+  (:require [clojure.string :refer [split]])
   (:gen-class))
 
-(def input (str/split (slurp "resources/input.txt") #"\n"))
-
 (defn- str->dims [dim-str]
-  (->> (str/split dim-str #"x")
+  (->> (split dim-str #"x")
        (map read-string)
        (zipmap [:l :w :h])))
 

@@ -1,4 +1,4 @@
-# no-math
+# day-two
 
 FIXME: description
 
@@ -10,7 +10,7 @@ Download from http://example.com/FIXME.
 
 FIXME: explanation
 
-    $ java -jar no-math-0.1.0-standalone.jar [args]
+    $ java -jar day-two-0.1.0-standalone.jar [args]
 
 ## Options
 
