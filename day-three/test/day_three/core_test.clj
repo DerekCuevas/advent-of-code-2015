@@ -1,6 +1,6 @@
-(ns spherical-houses.core-test
+(ns day-three.core-test
   (:require [clojure.test :refer :all]
-            [spherical-houses.core :refer :all]))
+            [day-three.core :refer :all]))
 
 (def input (slurp "resources/input.txt"))
 

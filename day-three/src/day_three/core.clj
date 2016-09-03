@@ -1,4 +1,4 @@
-(ns spherical-houses.core
+(ns day-three.core
   (:gen-class))
 
 (defn- move [[x y] dir]
@@ -24,3 +24,4 @@
        (map travel)
        (apply into)
        count))
+

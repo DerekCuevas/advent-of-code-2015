@@ -1,4 +1,4 @@
-# spherical-houses
+# day-three
 
 FIXME: description
 
@@ -10,7 +10,7 @@ Download from http://example.com/FIXME.
 
 FIXME: explanation
 
-    $ java -jar spherical-houses-0.1.0-standalone.jar [args]
+    $ java -jar day-three-0.1.0-standalone.jar [args]
 
 ## Options
 
