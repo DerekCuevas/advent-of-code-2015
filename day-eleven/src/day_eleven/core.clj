@@ -7,20 +7,21 @@
 (defn- butlast-str [s]
   (apply str (butlast s)))
 
-(defn- increment [s]
-  (cond
-    (empty? s)
-      \a
-    (= (last s) \z)
-      (str (increment (butlast-str s)) \a)
-    :else
-      (str (butlast-str s) (inc-char (last s)))))
+(defn- inc-str [s]
+  (let [last-char (last s)
+        butlast-char (butlast-str s)]
+    (cond
+      (empty? s)
+        "a"
+      (= last-char \z)
+        (str (inc-str butlast-char) \a)
+      :else
+        (str butlast-char (inc-char last-char)))))
 
-(defn- ordered? [coll]
-  (->> coll
-       (reduce #(if (not= %2 (inc %1)) (reduced false) %2))
-       (false?)
-       (not)))
+(defn- ordered? [[x :as coll]]
+  (->> (iterate inc x)
+   	   (take (count coll))
+       (= coll)))
 
 (defn- any-increasing-three? [s]
   (->> (partition 3 1 s)
@@ -46,7 +47,7 @@
   (every? true? (rules s)))
 
 (defn next-password [password]
-  (loop [candidate (increment password)]
+  (loop [candidate (inc-str password)]
     (if (password? candidate)
       candidate
-      (recur (increment candidate)))))
+      (recur (inc-str candidate)))))
