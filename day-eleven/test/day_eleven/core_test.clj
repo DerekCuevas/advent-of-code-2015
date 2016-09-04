@@ -7,3 +7,7 @@
 (deftest next-password-test
   (testing "next password"
     (is (= (next-password "hxbxwxba") "hxbxxyzz"))))
+
+(deftest next-next-password-test
+  (testing "next next password"
+    (is (= (next-password "hxbxxyzz") "hxcaabcc"))))
