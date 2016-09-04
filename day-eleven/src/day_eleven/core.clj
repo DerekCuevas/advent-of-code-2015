@@ -20,7 +20,7 @@
 
 (defn- ordered? [[x :as coll]]
   (->> (iterate inc x)
-   	   (take (count coll))
+       (take (count coll))
        (= coll)))
 
 (defn- any-increasing-three? [s]
