@@ -5,10 +5,10 @@
 
 (def input (read-str (slurp "resources/input.json")))
 
-(deftest sum-test
+(deftest sum-numbers-test
   (testing "sums all numbers in json"
-    (is (= (sum input) 191164))))
+    (is (= (sum-numbers input) 191164))))
 
-(deftest sum-without-red-test
+(deftest sum-numbers-without-red-test
   (testing "sums all numbers in json, except for objects and children with key 'red'"
-    (is (= (sum-without-red input) 87842))))
+    (is (= (sum-numbers-without-red input) 87842))))
