@@ -3,7 +3,7 @@
             [day-twelve.core :refer :all]
             [clojure.data.json :refer [read-str]]))
 
-(def input (read-str (slurp "resources/input.txt")))
+(def input (read-str (slurp "resources/input.json")))
 
 (deftest sum-test
   (testing "sums all numbers in json"
