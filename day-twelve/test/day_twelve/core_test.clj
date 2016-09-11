@@ -1,7 +1,10 @@
 (ns day-twelve.core-test
   (:require [clojure.test :refer :all]
-            [day-twelve.core :refer :all]))
+            [day-twelve.core :refer :all]
+            [clojure.data.json :refer [read-str]]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(def input (read-str (slurp "resources/input.txt")))
+
+(deftest sum-test
+  (testing "sums all numbers in json"
+    (is (= (sum input) 191164))))
