@@ -32,3 +32,11 @@
        (map #(partition 2 1 [(first %)] %))
        (map (partial sum-happiness graph))
        (apply max)))
+
+;; part two
+
+(defn add-guest [graph guest happiness]
+  (->> (keys graph)
+       (mapcat (fn [neighbor] [[guest neighbor] [neighbor guest]]))
+       (map (fn [[from to]] {:pair [from to] :distance happiness}))
+       (reduce add-edge graph)))
