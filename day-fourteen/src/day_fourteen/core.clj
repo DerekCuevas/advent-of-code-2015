@@ -1,13 +1,15 @@
 (ns day-fourteen.core
   (:gen-class))
 
-(def ^:private reindeer-format #"(\S+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds.")
+(def ^:private reindeer-format
+  #"(\S+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds.")
 
 (defn- init-reindeer [name speed duration rest]
   {:name name
    :speed speed
    :rest rest
    :duration duration
+   :points 0
    :position 0
    :resting? false
    :time-awake 0
@@ -55,12 +57,33 @@
     (:resting? reindeer)
       (asleep reindeer)))
 
+(defn- add-point [leading reindeer]
+  (if (not= leading (:position reindeer))
+    reindeer
+    (update reindeer :points inc)))
+
+(defn- award-points [participants]
+  (let [sorted (sort-by :position > participants)
+        leading (:position (first sorted))]
+    (map (partial add-point leading) participants)))
+
 (defn- race [duration participants]
   (->> (range duration)
-       (reduce (fn [reindeer _] (doall (map tick reindeer))) participants)))
+       (reduce
+        (fn [reindeer _]
+          (award-points (map tick reindeer)))
+        participants)))
 
-(defn fastest-reindeer [duration input]
+;; part one
+(defn fastest-reindeer-by-position [duration input]
   (->> (map parse-reindeer input)
        (race duration)
        (map :position)
+       (apply max)))
+
+;; part two
+(defn fastest-reindeer-by-points [duration input]
+  (->> (map parse-reindeer input)
+       (race duration)
+       (map :points)
        (apply max)))

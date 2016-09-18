@@ -5,6 +5,10 @@
 
 (def input (split (slurp "resources/input.txt") #"\n"))
 
-(deftest fastest-reindeer-test
-  (testing "fastest-reindeer"
-    (is (= (fastest-reindeer 2503 input) 2696))))
+(deftest fastest-reindeer-by-position-test
+  (testing "fastest reindeer by position"
+    (is (= (fastest-reindeer-by-position 2503 input) 2696))))
+
+(deftest fastest-reindeer-by-points-test
+  (testing "fastest reindeer by points"
+    (is (= (fastest-reindeer-by-points 2503 input) 1084))))
