@@ -2,7 +2,8 @@
   (:require [clojure.math.combinatorics :refer [permutations]])
   (:gen-class))
 
-(def ^:private instruction-format #"(\S+) would (gain|lose) (\d+) happiness units by sitting next to (\S+).")
+(def ^:private instruction-format
+  #"(\S+) would (gain|lose) (\d+) happiness units by sitting next to (\S+).")
 
 (defn- parse-edge [s]
   (let [[_ guest sign happiness neighbor] (re-find instruction-format s)
@@ -34,7 +35,6 @@
        (apply max)))
 
 ;; part two
-
 (defn add-guest [graph guest happiness]
   (->> (keys graph)
        (mapcat (fn [neighbor] [[guest neighbor] [neighbor guest]]))
