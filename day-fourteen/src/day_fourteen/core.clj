@@ -6,8 +6,8 @@
 
 (defn- init-reindeer [speed duration rest]
   {:speed speed
-   :rest rest
    :duration duration
+   :rest rest
    :points 0
    :position 0
    :resting? false
