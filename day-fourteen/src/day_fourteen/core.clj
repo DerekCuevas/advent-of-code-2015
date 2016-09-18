@@ -57,7 +57,7 @@
     (:resting? reindeer)
       (asleep reindeer)))
 
-(defn- add-point [leading reindeer]
+(defn- award-point [leading reindeer]
   (if (not= leading (:position reindeer))
     reindeer
     (update reindeer :points inc)))
@@ -65,7 +65,7 @@
 (defn- award-points [participants]
   (let [sorted (sort-by :position > participants)
         leading (:position (first sorted))]
-    (map (partial add-point leading) participants)))
+    (map (partial award-point leading) participants)))
 
 (defn- race [duration participants]
   (->> (range duration)
