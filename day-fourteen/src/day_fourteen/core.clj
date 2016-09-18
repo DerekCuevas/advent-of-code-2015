@@ -4,75 +4,72 @@
 (def ^:private reindeer-format
   #"(\S+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds.")
 
-(defn- init-reindeer [name speed duration rest]
-  {:name name
-   :speed speed
+(defn- init-reindeer [speed duration rest]
+  {:speed speed
    :rest rest
    :duration duration
    :points 0
    :position 0
    :resting? false
-   :time-awake 0
-   :time-asleep 0})
+   :time-flying 0
+   :time-resting 0})
 
 (defn- parse-reindeer [s]
-  (let [[_ name speed duration rest] (re-find reindeer-format s)]
-    (apply init-reindeer
-           (keyword name)
-           (map read-string [speed duration rest]))))
+  (let [[_ _ & constants] (re-find reindeer-format s)]
+    (apply init-reindeer (map read-string constants))))
 
-(defn- asleep [reindeer]
-  (update reindeer :time-asleep inc))
+(defn- resting [reindeer]
+  (update reindeer :time-resting inc))
 
-(defn- move [reindeer]
+(defn- flying [reindeer]
   (-> reindeer
-      (update :time-awake inc)
+      (update :time-flying inc)
       (update :position + (:speed reindeer))))
 
-(defn- awake [reindeer]
+(defn- resting->flying [reindeer]
   (-> reindeer
       (assoc :resting? false)
-      (assoc :time-asleep 0)))
+      (assoc :time-resting 0)))
 
-(defn- sleep [reindeer]
+(defn- flying->resting [reindeer]
   (-> reindeer
       (update :position + (:speed reindeer))
       (assoc :resting? true)
-      (assoc :time-awake 0)))
+      (assoc :time-flying 0)))
 
-(defn- should-awake? [{:keys [rest resting? time-asleep]}]
-  (and resting? (= (inc time-asleep) rest)))
+(defn- should-fly? [{:keys [rest resting? time-resting]}]
+  (and resting? (= (inc time-resting) rest)))
 
-(defn- should-sleep? [{:keys [duration resting? time-awake]}]
-  (and (not resting?) (= (inc time-awake) duration)))
+(defn- should-rest? [{:keys [duration resting? time-flying]}]
+  (and (not resting?) (= (inc time-flying) duration)))
 
 (defn- tick [reindeer]
   (cond
-    (should-awake? reindeer)
-      (awake reindeer)
-    (should-sleep? reindeer)
-      (sleep reindeer)
+    (should-fly? reindeer)
+      (resting->flying reindeer)
+    (should-rest? reindeer)
+      (flying->resting reindeer)
     (not (:resting? reindeer))
-      (move reindeer)
+      (flying reindeer)
     (:resting? reindeer)
-      (asleep reindeer)))
+      (resting reindeer)))
 
-(defn- award-point [leading reindeer]
-  (if (not= leading (:position reindeer))
+(defn- award-point [leading {:keys [position] :as reindeer}]
+  (if-not (= leading position)
     reindeer
     (update reindeer :points inc)))
 
 (defn- award-points [participants]
-  (let [sorted (sort-by :position > participants)
-        leading (:position (first sorted))]
-    (map (partial award-point leading) participants)))
+  (let [[leading] (sort-by :position > participants)]
+    (map (partial award-point (:position leading)) participants)))
 
 (defn- race [duration participants]
-  (->> (range duration)
-       (reduce
-        (fn [reindeer _]
-          (award-points (map tick reindeer)))
-        participants)))
+  (loop [participants participants
+         time-elapsed 0]
+    (if (>= time-elapsed duration)
+      participants
+      (recur (award-points (map tick participants))
+             (inc time-elapsed)))))
 
 ;; part one
 (defn fastest-reindeer-by-position [duration input]
