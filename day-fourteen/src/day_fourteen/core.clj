@@ -4,7 +4,7 @@
 (def ^:private reindeer-format
   #"(\S+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds.")
 
-(defn- init-reindeer [speed duration rest]
+(defn- reindeer [speed duration rest]
   {:speed speed
    :duration duration
    :rest rest
@@ -16,7 +16,7 @@
 
 (defn- parse-reindeer [s]
   (let [[_ _ & constants] (re-find reindeer-format s)]
-    (apply init-reindeer (map read-string constants))))
+    (apply reindeer (map read-string constants))))
 
 (defn- resting [reindeer]
   (update reindeer :time-resting inc))
