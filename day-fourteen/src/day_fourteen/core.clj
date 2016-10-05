@@ -18,41 +18,42 @@
   (let [[_ _ & constants] (re-find reindeer-format s)]
     (apply reindeer (map read-string constants))))
 
-(defn- resting [reindeer]
-  (update reindeer :time-resting inc))
-
-(defn- flying [reindeer]
-  (-> reindeer
-      (update :time-flying inc)
-      (update :position + (:speed reindeer))))
-
-(defn- resting->flying [reindeer]
-  (-> reindeer
-      (assoc :resting? false)
-      (assoc :time-resting 0)))
-
-(defn- flying->resting [reindeer]
-  (-> reindeer
-      (update :position + (:speed reindeer))
-      (assoc :resting? true)
-      (assoc :time-flying 0)))
-
 (defn- should-fly? [{:keys [rest resting? time-resting]}]
   (and resting? (= (inc time-resting) rest)))
 
 (defn- should-rest? [{:keys [duration resting? time-flying]}]
   (and (not resting?) (= (inc time-flying) duration)))
 
-(defn- tick [reindeer]
-  (cond
-    (should-fly? reindeer)
-      (resting->flying reindeer)
-    (should-rest? reindeer)
-      (flying->resting reindeer)
-    (not (:resting? reindeer))
-      (flying reindeer)
-    (:resting? reindeer)
-      (resting reindeer)))
+(defmulti move
+  (fn [reindeer]
+    (cond
+      (should-fly? reindeer) :resting->flying
+      (should-rest? reindeer) :flying->resting
+      (not (:resting? reindeer)) :flying
+      :else :resting)))
+
+(defmethod move :resting->flying
+  [reindeer]
+  (-> reindeer
+      (assoc :resting? false)
+      (assoc :time-resting 0)))
+
+(defmethod move :flying->resting
+  [reindeer]
+  (-> reindeer
+      (update :position + (:speed reindeer))
+      (assoc :resting? true)
+      (assoc :time-flying 0)))
+
+(defmethod move :flying
+  [reindeer]
+  (-> reindeer
+      (update :time-flying inc)
+      (update :position + (:speed reindeer))))
+
+(defmethod move :resting
+  [reindeer]
+  (update reindeer :time-resting inc))
 
 (defn- award-point [leading {:keys [position] :as reindeer}]
   (if-not (= leading position)
@@ -68,7 +69,7 @@
          time-elapsed 0]
     (if (>= time-elapsed duration)
       participants
-      (recur (award-points (map tick participants))
+      (recur (award-points (map move participants))
              (inc time-elapsed)))))
 
 ;; part one
