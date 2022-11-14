@@ -12,12 +12,11 @@
   (let [[_ name & values] (re-find ingredient-format s)
         [capacity durability flavor texture calories] (map read-string values)]
     {:name name
-     :ingredient {
-       :capacity capacity
-       :durability durability
-       :flavor flavor
-       :texture texture
-       :calories calories}}))
+     :ingredient {:capacity capacity
+                  :durability durability
+                  :flavor flavor
+                  :texture texture
+                  :calories calories}}))
 
 (defn map-vals [f m]
   (zipmap (keys m) (map f (vals m))))
