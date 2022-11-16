@@ -53,3 +53,15 @@
          (first))))
 
 ;; (find-sue (parse-input input) mistery-sue-attrs)
+
+(defn score [source-attrs target-attrs]
+  (count (filter (fn [[target-attr target-val]]
+                   (let [source-value (get source-attrs target-attr)]
+                     (and (some? source-value) (== source-value target-val)))) target-attrs)))
+
+(defn find-sue-linear [sues attrs]
+  (reduce (fn [match {sue-attrs :attrs sue :sue}]
+            (let [sue-score (score sue-attrs attrs)]
+              (if (> sue-score (get match :max-score))
+                {:max-score sue-score :sue sue} match)))
+          {:max-score 0 :sue nil} sues))
