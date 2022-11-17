@@ -3,7 +3,7 @@
   (:require [clojure.set :refer [union]])
   (:gen-class))
 
-;; 103
+;; 103, 405
 (def mistery-sue-attrs
   {:children 3
    :cats 7
@@ -54,14 +54,23 @@
 
 ;; (find-sue (parse-input input) mistery-sue-attrs)
 
-(defn score [source-attrs target-attrs]
+(def attr->comparator
+  {:cats >
+   :trees >
+   :pomeranians <
+   :goldfish <})
+
+(defn score [source-attrs target-attrs comparator-overrides]
   (count (filter (fn [[target-attr target-val]]
-                   (let [source-value (get source-attrs target-attr)]
-                     (and (some? source-value) (== source-value target-val)))) target-attrs)))
+                   (let [source-value (get source-attrs target-attr)
+                         comparator-fn (get comparator-overrides target-attr ==)]
+                     (and (some? source-value) (comparator-fn source-value target-val)))) target-attrs)))
 
 (defn find-sue-linear [sues attrs]
   (reduce (fn [match {sue-attrs :attrs sue :sue}]
-            (let [sue-score (score sue-attrs attrs)]
+            (let [sue-score (score sue-attrs attrs attr->comparator)]
               (if (> sue-score (get match :max-score))
                 {:max-score sue-score :sue sue} match)))
           {:max-score 0 :sue nil} sues))
+
+;; (find-sue-linear (parse-input input) mistery-sue-attrs)
