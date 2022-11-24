@@ -13,22 +13,20 @@
        (map parse-mapping-kv)
        (into [])))
 
-(defn starts-with? [vec-a vec-b]
-  (every? identity (map #(== 0 (compare %1 %2)) vec-a vec-b)))
-
-(defn match-indexes [subs s]
-  (let [v (vec s)
-        subv (vec subs)]
-    (filter #(starts-with? (subvec v %) subv) (range (count v)))))
+(defn match-indexes [s substr]
+  (filter #(str/starts-with? (subs s %) substr)
+          (range (count s))))
 
 (defn replace-str [s pattern replacement start-index]
   (str (subs s 0 start-index)
        (str/replace-first (subs s start-index) pattern replacement)))
 
-(defn all-replacements [s pattern replacement]
-  (map #(replace-str s (re-pattern pattern) replacement %) (match-indexes pattern s)))
+(defn all-replacements [s substr replacement]
+  (map #(replace-str s (re-pattern substr) replacement %) (match-indexes s substr)))
 
 ;; (def test-str "abcdabeabfg")
+
+;; (match-indexes test-str "ab")
 
 ;; (replace-str test-str #"ab" "cd" 4)
 
