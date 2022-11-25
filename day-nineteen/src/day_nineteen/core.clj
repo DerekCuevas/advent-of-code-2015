@@ -1,5 +1,6 @@
 (ns day-nineteen.core
   (:require [clojure.string :as str])
+  (:require [clojure.set :as set])
   (:gen-class))
 
 (def input-str (slurp "resources/input.txt"))
@@ -21,19 +22,40 @@
   (str (subs s 0 start-index)
        (str/replace-first (subs s start-index) pattern replacement)))
 
-(defn all-replacements [s substr replacement]
-  (map #(replace-str s (re-pattern substr) replacement %) (match-indexes s substr)))
+(defn replacements [s substr replacement]
+  (map #(replace-str s (re-pattern substr) replacement %)
+       (match-indexes s substr)))
 
-;; (def test-str "abcdabeabfg")
+(defn all-replacements [mappings s]
+  (->> mappings
+       (map (fn [[pattern replacement]] (replacements s pattern replacement)))
+       (flatten)
+       (into #{})))
 
-;; (match-indexes test-str "ab")
+;; part one
 
-;; (replace-str test-str #"ab" "cd" 4)
+(count (all-replacements input-mappings input-str))
 
-;; (all-replacements test-str "ab" "cd")
+;; part two
 
-(->> input-mappings
-     (map (fn [[pattern replacement]] (all-replacements input-str pattern replacement)))
-     (flatten)
-     (into #{})
-     (count))
+(defn fewest-num-replacements-to-string [s mappings search-str]
+  (loop [values (->> mappings
+                     (filter #(== 0 (compare search-str (first %))))
+                     (map second)
+                     (into #{}))
+         level 1]
+    (if (contains? values s)
+      level
+      (recur (apply set/union (map #(all-replacements mappings %) values))
+             (inc level)))))
+
+(def test-mappings
+  [["e" "H"]
+   ["e"  "O"]
+   ["H"  "HO"]
+   ["H"  "OH"]
+   ["O"  "HH"]])
+
+(fewest-num-replacements-to-string "HOH" test-mappings "e")
+
+;; (fewest-num-replacements-to-s input-str input-mappings "e")
