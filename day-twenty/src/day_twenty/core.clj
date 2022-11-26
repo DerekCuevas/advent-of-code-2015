@@ -7,24 +7,17 @@
 (defn divisible-by? [den x]
   (zero? (mod x den)))
 
-(defn transpose [xs]
-  (apply map list xs))
+(defn divisors [n]
+  (filter #(divisible-by? % n) (range 1 (inc n))))
 
-(defn sum-row [row]
-  (reduce + (map-indexed #(* presents-multiplier (inc %) %2) row)))
+(defn sum-divisors [n]
+  (reduce + (divisors n)))
 
-(defn houses-seq [index]
-  (->> (range 1 (inc index))
-       (repeat index)
-       (map-indexed #(map (fn [x] (if (divisible-by? (inc %) x) 1 0)) %2))
-       (transpose)
-       (map-indexed #(take (inc %) %2))
-       (map sum-row)))
+(defn find-house [x]
+  (loop [index 450000]
+    (let [presents (sum-divisors index)]
+      (if (>= presents x)
+        index
+        (recur (inc index))))))
 
-(defn first-house-with-at-least-x-presents [x-presents]
-  (->> (houses-seq 100000)
-       (take-while #(< % x-presents))
-       (count)
-       (inc)))
-
-;; (first-house-with-at-least-x-presents target-presents)
+;; (find-house (/ target-presents 10))
