@@ -2,23 +2,29 @@
 
 (def presents-multiplier 10)
 
+(def target-presents 29000000)
+
 (defn divisible-by? [den x]
   (zero? (mod x den)))
 
-(defn num-presents-at-house [house-index]
-  (->> (range 1 (inc house-index))
-       (repeat house-index)
-       (map-indexed #(filter (partial divisible-by? (inc %)) %2))
-       (map-indexed #(if (contains? (set %2) house-index) (inc %) nil))
-       (filter some?)
-       (map #(* presents-multiplier %))
-       (reduce +)))
+(defn transpose [xs]
+  (apply map list xs))
+
+(defn sum-row [row]
+  (reduce + (map-indexed #(* presents-multiplier (inc %) %2) row)))
+
+(defn houses-seq [index]
+  (->> (range 1 (inc index))
+       (repeat index)
+       (map-indexed #(map (fn [x] (if (divisible-by? (inc %) x) 1 0)) %2))
+       (transpose)
+       (map-indexed #(take (inc %) %2))
+       (map sum-row)))
 
 (defn first-house-with-at-least-x-presents [x-presents]
-  (->> (iterate inc 1)
-       (map num-presents-at-house)
+  (->> (houses-seq 100000)
        (take-while #(< % x-presents))
        (count)
        (inc)))
 
-;; (first-house-with-at-least-x-presents 29000000)
+;; (first-house-with-at-least-x-presents target-presents)
